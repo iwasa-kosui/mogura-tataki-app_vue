@@ -11,8 +11,14 @@
 </template>
 
 <script>
+import MoleModel from "../models/MoleModel";
+import Moles from "./Moles";
+import { setInterval } from "timers";
+
 const MOLE_COUNT = 4;
 const TIME_COUNT = 20;
+const MAX_INTERVAL_TO_SHOW_MOLE = 3000;
+const MAX_INTERVAL_TO_HIDE_MOLE = 1000;
 
 const genNewCurrentGame = () => ({
   timerToShowMole: null,
@@ -28,10 +34,66 @@ const initData = () => ({
   status: "WAITING"
 });
 
+const sample = x => x[Math.floor(Math.random() * x.length)];
+
 export default {
   name: "Game",
   data: initData,
-  methods: {}
+  methods: {
+    stopGame: function() {
+      this.currentGame.moles.map(
+        mole => mole.timer && window.clearTimeout(mole.timer._id)
+      );
+      if (this.currentGame.timerToShowMole) {
+        window.clearInterval(this.currentGame.timerToShowMole._id);
+      }
+      if (this.currentGame.timerToWatchTimeCount) {
+        window.clearInterval(this.currentGame.timerToWatchTimeCount._id);
+      }
+      this.highScore = Math.max(this.currentGame.score, this.highScore);
+      this.status = "ENDED";
+    },
+    startGame: function() {
+      this.stopGame();
+      this.currentGame = genNewCurrentGame();
+      this.status = "PLAYING";
+
+      this.setTimerToWatchTimeCount();
+      this.setTimerToShowMole();
+    },
+    setTimerToWatchTimeCount: function() {
+      this.currentGame.timerToWatchTimeCount = setInterval(() => {
+        this.currentGame.timeCount -= 1;
+        if (this.currentGame.timeCount == 0) {
+          this.stopGame();
+        }
+      }, 1000);
+    },
+    setTimerToShowMole: function() {
+      this.currentGame.timerToShowMole = setInterval(() => {
+        const moleToShow = sample(
+          this.currentGame.moles.filter(mole => !mole.visible)
+        );
+        if (!moleToShow) {
+          return;
+        }
+        moleToShow.visible = true;
+        moleToShow.timer = setTimeout(() => {
+          moleToShow.visible = false;
+        }, MAX_INTERVAL_TO_HIDE_MOLE);
+      }, MAX_INTERVAL_TO_SHOW_MOLE * Math.random());
+    },
+    handleStartClick: function() {
+      this.startGame();
+    },
+    handleMoleClick: function(clickedMole) {
+      if (clickedMole.visible) {
+        this.currentGame.score += 1;
+        window.clearTimeout(clickedMole.timer._id);
+        clickedMole.visible = false;
+      }
+    }
+  }
 };
 </script>
 
