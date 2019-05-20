@@ -13,7 +13,6 @@
 <script>
 import MoleModel from "../models/MoleModel";
 import Moles from "./Moles";
-import { setInterval } from "timers";
 
 const MOLE_COUNT = 4;
 const TIME_COUNT = 20;
@@ -62,7 +61,7 @@ export default {
       this.setTimerToShowMole();
     },
     setTimerToWatchTimeCount: function() {
-      this.currentGame.timerToWatchTimeCount = setInterval(() => {
+      this.currentGame.timerToWatchTimeCount = window.setInterval(() => {
         this.currentGame.timeCount -= 1;
         if (this.currentGame.timeCount == 0) {
           this.stopGame();
@@ -70,7 +69,7 @@ export default {
       }, 1000);
     },
     setTimerToShowMole: function() {
-      this.currentGame.timerToShowMole = setInterval(() => {
+      this.currentGame.timerToShowMole = window.setInterval(() => {
         const moleToShow = sample(
           this.currentGame.moles.filter(mole => !mole.visible)
         );
