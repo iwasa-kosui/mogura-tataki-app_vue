@@ -1,4 +1,5 @@
-# mogura-tataki-app_vue2
+# mogura-tataki-app_vue
+![](https://i.imgur.com/9zNBTLK.png)
 
 ## Project setup
 ```
