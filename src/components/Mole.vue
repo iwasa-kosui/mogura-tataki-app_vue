@@ -1,5 +1,5 @@
 <template>
-  <div class="mole">
+  <div class="mole" @click="$emit('on-mole-click', mole)">
     <img class="gopher" src="../assets/gopher.png" v-bind:style="gopherStyle">
     <img class="dirt" src="../assets/dirt.svg">
   </div>
@@ -13,7 +13,16 @@ const initData = () => ({
 export default {
   name: "Mole",
   props: ["mole"],
-  data: initData
+  data: initData,
+  watch: {
+    "mole.visible": function(visible) {
+      if (visible) {
+        this.gopherStyle = "top: 25%;";
+      } else {
+        this.gopherStyle = "top: 100%";
+      }
+    }
+  }
 };
 </script>
 
